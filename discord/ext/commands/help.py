@@ -1103,10 +1103,7 @@ class DefaultHelpCommand(HelpCommand):
         parent: Optional[Group[Any, ..., Any]] = command.parent  # type: ignore # the parent will be a Group
         entries = []
         while parent is not None:
-            if not parent.signature or parent.invoke_without_command:
-                entries.append(parent.name)
-            else:
-                entries.append(parent.name + ' ' + parent.signature)
+            entries.append(parent.name)
             parent = parent.parent  # type: ignore
         parent_sig = ' '.join(reversed(entries))
 

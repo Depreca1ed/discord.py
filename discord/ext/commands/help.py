@@ -1099,11 +1099,23 @@ class DefaultHelpCommand(HelpCommand):
         if not self.show_parameter_descriptions:
             return super().get_command_signature(command)
 
+
+        parent: Optional[Group[Any, ..., Any]] = command.parent  # type: ignore # the parent will be a Group
+        entries = []
+        while parent is not None:
+            if not parent.signature or parent.invoke_without_command:
+                entries.append(parent.name)
+            else:
+                entries.append(parent.name + ' ' + parent.signature)
+            parent = parent.parent  # type: ignore
+        parent_sig = ' '.join(reversed(entries))
+
         name = command.name
         if len(command.aliases) > 0:
             aliases = '|'.join(command.aliases)
             name = f'[{command.name}|{aliases}]'
-
+        if parent_sig:
+            name = parent_sig + ' ' + name
         return f'{self.context.clean_prefix}{name}'
 
     def add_indented_commands(
